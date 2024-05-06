@@ -1,3 +1,5 @@
+Short description of what the code does:
+
 1. main.py - 
    1. gpt: Loads a GPT model using predefined configurations and generates 10 text completions for a given prompt.
    2. unwrap_gpt: Loads a specific GPT model checkpoint, generates text completions, and saves a state dictionary with an inner (unwrapped) model state.
@@ -54,3 +56,32 @@
    4. RewardModelTrainer: Trains a reward model using pairwise loss.
    5. AcceleratorRewardModelTrainer: Trains a reward model using Hugging Face's Accelerate library for faster distributed training.
    
+RUNNING THE CODE:
+1. Install [PyTorch 2.0](https://pytorch.org/get-started/pytorch-2.0/#getting-started)
+2. Install dependencies with
+```bash
+pip install -r requirements.txt
+```
+
+3. The first step is to traing a SFT model, inside `src` directory, run this command. You can change batch size via `-b`. The bigger VRAM you have the larger batch size you can afford.
+```bash
+python train_sft.py --n experiment_name -b 2`
+```
+
+4. Once you finished SFT stage, you can start to train the reward model. You should have a directory started with `sft_` in your `runs` directory. Find the final model weights and run this. This should start a reward model training for 1 epoch and generate a directory started with `rm_` with weights in it.
+```bash
+python train_rm.py -b 2 -n experiment_name -p "./runs/path/to/your/weights"
+```
+
+5. Finally, you can start the RLHF with the reward model and SFT model you get from previous two steps. Run this command. Because the training is not stable sometimes, I stopped early around 12K steps with a batch size of 1. The final weights will be in a directory started with `ppo_`.
+```bash
+python train_rm.py -b 2 -n experiment_name -a "./runs/path/to/sft/weights" -c "./runs/path/to/reward_model/weights" -s naive
+```
+
+6. ## Evaluate
+0. You need to have an OpenAI account with credential key
+1. Put your key into a file called "openai.key" JSON file. It should be a dictionary with a key called "OPENAI_API_KEY" and the value is your key.
+2. Inside `src`, run this:
+```bash
+python evaluate.py -s "/path/to/sft/model" -p "/path/to/ppo/model"
+```
