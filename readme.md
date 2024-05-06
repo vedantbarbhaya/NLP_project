@@ -57,6 +57,8 @@ Short description of what the code does:
    5. AcceleratorRewardModelTrainer: Trains a reward model using Hugging Face's Accelerate library for faster distributed training.
 
 To test the final trained model, you can use this colab notebook - https://colab.research.google.com/drive/1bGVmT91qW221-GbtIMXq2ygpO9UVQCp7?usp=sharing
+
+
 RUNNING THE CODE:
 1. Install [PyTorch 2.0](https://pytorch.org/get-started/pytorch-2.0/#getting-started)
 2. Install dependencies with
